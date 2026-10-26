@@ -314,3 +314,73 @@ Por tanto, `geom_jitter()` es más adecuado para este caso, ya que mejora la leg
 ```{r}
 ggsave("./data/results/Ejercicio3.pdf", plot = iris.grafico3)
 ```
+
+# Ejercicio 4
+
+## Carga el fichero Ejercicio4_Data.Rdata. Examina las variables que tiene dicho dataset.
+
+```{r}
+fichero <- load("./data/Ejercicio4_Data.Rdata")
+fichero
+```
+
+```{r}
+str(DatosEjer4)
+```
+
+El conjunto de datos contiene 200 observaciones y 3 variables: 
+
+* **Fecha**, de tipo fecha (`Date`)
+* **Fabricante**, variable categórica de tipo factor con dos niveles (Microsoft y Apple),
+* y **Ventas**, variable numérica.
+
+Estos datos permitirán analizar y comparar la evolución temporal de las ventas de ambos fabricantes.
+
+## Representa un gráfico de puntos, en el que se muestre la fecha en el eje 𝑥 y las ventas en el eje 𝑦. Queremos que los datos de cada fabricante sean de un color distinto. ¿Es este gráfico válido para evaluar la evolución de las ventas de cada fabricante?
+
+```{r}
+grafico4 <- ggplot(data = DatosEjer4, mapping = aes(x = Fecha, y = Ventas, color = Fabricante))
+grafico4 + geom_point()
+```
+
+El gráfico obtenido a partir de la representación indicada muestra las ventas mensuales de ambos fabricantes entre 2002 y 2010. A partir de él se observa que Microsoft presenta generalmente más ventas, aunque hay algunos periodos en los que las ventas de ambos se aproximan. Además, existen patrones temporales respecto a las ventas, donde, por ejemplo, para Apple, se tiene una caida tanto en 2005-2006 como en 2009-2010, mientras que para Microsoft, ocurre en 2003-2004 y 2007-2008.
+
+Sin embargo, el gráfico de dispersión **no es el más adecuado para analizar su evolución temporal**, ya que los puntos no están conectados y su interpretación es más compleja.
+
+## Representa un gráfico como el anterior en el que se muestre la línea que une los puntos que antes has representado.
+
+```{r}
+grafico4 + geom_point() + geom_line()
+```
+
+Al añadir `geom_line()`, las observaciones de cada fabricante se visualizan cronológicamente, facilitando la interpretación de la evolución de sus ventas.
+
+Esta reprensetación **confirma las tendencias identificadas anteriormente**, pero con mayor claridad. Por tanto, **el gráfico de líneas es más adecuado para analizar series temporales**, ya que facilita la identificación de tendencias y variaciones respecto al gráfico de dispersión.
+
+## Modifica el gráfico anterior para que la tendencia de cada fabricante este trazada con un tipo de línea diferente.
+
+Utilizando **aesthetic**, añadimos `linetype = Fabricante` para que cada compañía tenga un tipo de línea diferente, facilitando más aún la interpretación del gráfico.
+En este caso, la evolución temporal de Microsoft se representa con una línea continua, mientras que la de Apple, con una línea discontinua.
+
+```{r}
+grafico4 + geom_point() + geom_line(aes(linetype = Fabricante))
+```
+
+## Añade el siguiente título al gráfico “Ventas mensuales de diferentes compañías tecnológicas”.
+
+Al igual que en el ejercicio 2, utilizamos `labs()` para asignar un título al gráfico.
+
+```{r}
+grafico4 <- grafico4 +
+  geom_point() +
+  geom_line(aes(linetype = Fabricante)) +
+  labs(title = "Ventas mensuales de diferentes compañías tecnológicas")
+
+grafico4
+```
+
+## Almacena en formato pdf el gráfico resultante en un fichero denominado Ejercicio4.pdf.
+
+```{r}
+ggsave("./data/results/Ejercicio4.pdf", plot = grafico4)
+```
