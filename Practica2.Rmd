@@ -1,0 +1,463 @@
+---
+title: "Práctica 2. Visualización de datos"
+author: "Marino Fernández Pérez"
+date: "`r Sys.Date()`"
+output:
+  pdf_document:
+    toc: true
+    toc_depth: 3
+    number_sections: true
+  html_document:
+    echo: true
+    number_sections: true
+    theme: lumen
+    toc: true
+  html_notebook:
+    echo: true
+    number_sections: true
+    toc: true
+  bookdown::pdf_document2:
+    toc: true
+    toc_depth: 3
+    number_sections: true
+    figure_caption: "Figura" # Referencias en castellano
+    table_caption: "Tabla"
+  bookdown::html_document2:
+    echo: true
+    number_sections: true
+    theme: spacelab
+    toc: true
+    figure_caption: "Figura"
+    table_caption: "Tabla"
+always_allow_html: true
+params:
+  lang: ES
+lang: "`r switch(params$lang, ES = 'es-ES', EN = 'en-US')`"
+subtitle: "Introducción a la Ciencia de Datos. Máster en Ciencia de Datos- UV"
+language:
+  label:
+    fig: 'Figura '
+    tab: 'Tabla '
+    eq: 'Ecuación '
+    thm: 'Teorema '
+    lem: 'Lema '
+    def: 'Definición '
+    cor: 'Corolario '
+    prp: 'Proposición '
+    exm: 'Ejemplo '
+    exr: 'Ejercicio '
+    proof: 'Demostración. '
+    remark: 'Nota: '
+    solution: 'Solución. '
+---
+
+```{r setup, cache = F, echo = F, message = F, warning = F, tidy = F}
+
+
+# CONFIGURACIÓN GENERAL
+library(knitr)
+options(width = 100)
+
+# Opciones generales de los chucks. Se utilizarán salvo cambios en el chunk
+opts_chunk$set(echo=F, message = F, error = F, warning = F, comment = NA, fig.align = 'center', dpi = 200, tidy = F, cache.path = '.cache/', fig.path = './figura/')
+
+# Opciones generales de dígitos cuando se incluyen tablas
+#options(xtable.type = 'html')
+knit_hooks$set(inline = function(x) {
+  
+  if(is.numeric(x)) {
+    round(x, getOption('digits'))
+  } else {
+    paste(as.character(x), collapse = ', ')
+  }
+})
+#knit_hooks$set(plot = knitr:::hook_plot_html)
+```
+
+```{r, message=FALSE}
+# Asegúrate que el paquete "pacman" está instalado
+if (!require("pacman")) install.packages("pacman")
+library(pacman)
+```
+
+```{r,results=FALSE}
+packages =  c("tidyverse", "knitr", "ggplot2", "datasets", "RColorBrewer",'latex2exp')
+pacman::p_load(char=packages)
+```
+
+Práctica 2
+
+# Ejercicio 1
+
+## Carga el fichero `weatherAUS.RData` utilizando lo aprendido en la práctica 1
+
+Para poder trabajar con el dataset, es necesario utilizar la función ya vista y utilizada en la práctica 1 `load()`.
+
+```{r} 
+load("./data/weatherAUS.RData")
+str(ds)
+```
+
+A simple vista, el conjunto de datos contiene 863 observaciones y 24 variables que lo caraceterizan, relacionadas con las condiciones meteorológicas de distintas localidades a lo largo de los años, y de distinto tipo (numéricas, categóricas...)
+
+No obstante, se pueden observar **valores faltantes** en algunas de ellas, así como variables numéricas almacenadas como carácteres en `Evaporation` y `Sunshine`.
+
+## Crea un objeto ggplot denominado grafico1 en el que esté definido el conjunto de datos ds alojado en el fichero weatherAUS.RData y un aesthetics en el que en el eje 𝑥 esté definida la variable MinTemp y en el eje 𝑦 esté definida la variable MaxTemp. 
+
+Utilizando la libreria `ggplot2`, en el diagrama de dispersión obtenido se observa una **relación fuertemente lineal** entre `MinTemp` y `MaxTemp` donde, a medida que aumenta la temperatura mínima, también tiende a aumentar la temperatura máxima. Además, también se observa una menor concentración de observaciones cuando las temperaturas mínimas son muy bajas o muy altas, siendo más frecuentes los valores intermedios.
+
+No obstante, la relación no es perfecta ya que hay dispersión en los puntos.
+
+```{r} 
+library(ggplot2)
+grafico1 <- ggplot(data = ds,
+                   mapping = aes(x = MinTemp, y = MaxTemp))
+grafico1 + geom_point(size = 0.4)
+```
+
+## Añade una capa que defina el objeto geométrico necesario para construir un gráfico de dispersión de las variables MinTemp y MaxTemp.
+
+```{r} 
+grafico2 <- ggplot(data = ds, mapping = aes(x = MinTemp, y = MaxTemp, color = RainTomorrow))
+grafico2 + geom_point(size = 0.4)
+```
+
+grafico2 + geom_point(size = 0.8)
+## Genera ahora el mismo gráfico y almacénalo en grafico2 pero define el aesthetics para visualizar las variables MinTemp y MaxTemp en los ejes de la gráfica y la variable categórica RainTomorrow como el color. A partir del objeto grafico2, representa un gráfico de dispersión en el que se muestren los puntos con el color del punto correspondiente a la variable RainTomorrow.
+## Añade a grafico2 una capa para incluir un título con ggtitle() y almacénalo en grafico3.
+## Almacena en formato pdf el gráfico resultante en un fichero denominado Ejercicio1.pdf.
+
+
+Con la función `str()` mostramos un resumen de las distintas variables que lo componen y visualizamos el tipo de dato de cada una de ellas, especialmente, para identificar el tipo de `FECHA` y `HORA`.
+
+```{r} 
+str(Deposito)
+```
+Al igual que ocurría al importar con `base`, ambas variables se han codificado como carácteres, por lo que cualquier modificación sobre estas será como trabajar como strings, que no son los tipos correctos.
+
+Por ello, convertimos con las funciones indicadas en el enunciado.
+
+```{r} 
+library(hms)
+
+# conversión de la columna FECHA
+Deposito$FECHA <- as.POSIXlt(Deposito$FECHA, format = "%d/%m/%Y")
+
+# conversión de la columna HORA
+Deposito$HORA <- as.hms(Deposito$HORA)
+```
+
+Tras hacer la conversion, verificamos que los cambios se han aplicado correctamente.
+
+```{r} 
+str(Deposito)
+```
+### Almacenar con save en una carpeta con nombre results dentro de la carpeta data.
+
+Desde R, creamos una subcarpeta dentro de **results** con `dir.create` y posteriormente, guardamos el nuevo dataset con las horas y fechas en formato correcto.
+
+```{r}
+dir.create("./data/results", showWarnings = F)
+save(Deposito, file = "./data/results/Deposito.RData")
+```
+
+## Inspección de los datos
+
+Al igual que lo usamos antes, `str()` muestra por consola un resumen del fichero, indicando las dimensiones, los nombres de las variables, sus tipos y algunos de sus valores.
+
+En este caso, contamos con un fichero de datos compuesto por 8887 observaciones y 5 variables que los caracterizan.
+
+```{r}
+str(Deposito)
+```
+
+La función `head()` muestra, por defecto, las 6 primeras instancias del dataset.
+
+```{r}
+head(Deposito)
+```
+
+Con `tail()` se visualizan, por defecto, las últimas 6 filas del conjunto de datos. A simple vista, los datos parecen estar ordenados ya que en estas últimas, si se compara con las 6 primeras, se tienen las temperaturas más altas, las alturas más altas, y la hora más adelantada.
+
+```{r}
+tail(Deposito)
+```
+
+Segun ChatGPT, da error por la configuración de la plantilla. De todas formas, `summary()` mostraría informacion sobre cada variable según su tipo. Por ejemplo, para **Altura** indicaría metricas estadisticas como la media o la mediana.
+
+```{r}
+# summary(Deposito)
+```
+
+# Transactions from a Bakery (Kaggle)
+
+Descargamos el fichero desde R a partir de la url de descarga. Para ello, se ha usado `download.file()` y `unzip()`, ya que la url contiene un .zip compuesto por dos ficheros .csv.
+
+```{r}
+url <- "https://www.kaggle.com/api/v1/datasets/download/akashdeepkuila/bakery"
+download.file(url, destfile = "data/bakery.zip", mode = "wb")
+unzip("data/bakery.zip", exdir = "data")
+```
+
+## Importación del fichero
+
+```{r}
+library(readr)
+
+filename <- "data/bakery_sales_revised.csv"
+BreadBasket <- read.csv(filename)
+
+str(BreadBasket)
+```
+Tras importar el dataset con `read.csv`, podemos ver que la variable `date_time`, que representa la fecha y hora, utiliza **character**, que no representa ni la fecha ni la hora.
+
+Para modificarla, volvemos a utilizar la codificacion `as.POSIXlt` del apartado anterior para convertir la variable `date_time` al formato adecuado.
+
+```{r}
+BreadBasket$date_time <- as.POSIXlt(BreadBasket$date_time, format = "%m/%d/%Y %H:%M")
+str(BreadBasket)
+```
+El formato de la fecha y hora ya se corresponde con el correcto. Una vez procesado el dataset, guardamos esta nueva version.
+
+```{r}
+dir.create("./data/results", showWarnings = F)
+save(BreadBasket, file = "./data/results/BreadBasket.RData")
+```
+
+## Inspección de los datos
+
+En este caso, contamos con un fichero de datos compuesto por 20507 observaciones y 5 variables que los caracterizan.
+
+```{r}
+str(BreadBasket)
+```
+La función `head()` muestra, por defecto, las 6 primeras instancias del dataset.
+
+```{r}
+head(BreadBasket)
+```
+
+Con `tail()` se visualizan, por defecto, las últimas 6 filas del conjunto de datos. A simple vista, las transacciones están ordenadas de menor a mayor id.
+
+```{r}
+tail(BreadBasket)
+```
+
+Utilizando `summary()`, descatamos que no existe instancias vacias para los **Items**.
+
+```{r}
+summary(BreadBasket)
+```
+# SPSS PsychBike.sav
+
+## Importación del fichero
+
+Para trabajar con archivos .sav, es necesario utilizar la libreria `haven`, que permite leer este tipo directamente.
+
+```{r}
+library(haven)
+
+filename <- "data/PsychBike.sav"
+PsychBike <- read_sav(filename)
+head(PsychBike)
+```
+Finalmente, guardamos el dataset como hemos hecho en los apartados anteriores.
+
+```{r}
+save(PsychBike, file = "data/results/PsychBike.RData")
+```
+
+## Inspección de los datos
+
+En este caso, contamos con un fichero de datos compuesto por 2355 observaciones y 6 variables que los caracterizan.
+Cabe destacar que `hour` se ha importado correctamente como `hss`. 
+
+Además, parece que este tipo de dato mantiene el formato spss en la mayoria de sus variables. 
+
+```{r}
+str(PsychBike)
+```
+La función `head()` muestra, por defecto, las 6 primeras instancias del dataset. Una vez más, parece que el dataset esta ordenado o bien ordenado por conjuntos, ya que estas primeras comparten `hour`, `helmet` y `distance_from_kerb`.
+
+```{r}
+head(PsychBike)
+```
+
+Con `tail()` se visualizan, por defecto, las últimas 6 filas del conjunto de datos. En este caso, los valores de `hour`, `distance_from_kerb` y `helmet` son los mismos pero distintos a los mostrados por `head()`.
+
+```{r}
+tail(PsychBike)
+```
+
+Error por lo mismo de antes (summary).
+
+```{r}
+## summary(PsychBike)
+```
+
+# iris.zip
+
+Para descargar y guardar el dataset, se repite el mismo procedimiento que se hizo con **Bakery**.
+
+```{r}
+url <- "https://archive.ics.uci.edu/static/public/53/iris.zip"
+download.file(url, destfile = "data/iris.zip", mode = "wb")
+```
+
+## Descomprimir el fichero
+
+Para descomprimir el fichero, se utiliza la funcion `unzip()`, con el parámetro **exdir** para indicar el lugar donde se descompondrá.
+
+```{r}
+unzip("data/iris.zip", exdir = "data")
+```
+
+# iris.data
+
+## Importación del fichero
+
+### Utiliza la funcion read_table para importar los datos.
+
+Debido al formato de los datos en el dataset **iris.data**, especificamos la coma como separador.
+
+```{r}
+library(readr)
+filename <- "data/iris.data"
+
+iris <- read.table(filename, sep = ",")
+```
+
+Verificamos que se ha cargado como se esperaba.
+
+```{r}
+head(iris)
+```
+### Cambia el nombre de las columnas por las que corresponda a la base datos (mirar la información en la página web).
+
+Modificamos el nombre de las columnas machacando el nombre actual de cada una de ellas, que se obtiene mediante la función `colnames()`.
+
+```{r}
+colnames(iris) <- c(
+  "sepal length", "sepal width",
+  "petal length", "petal width", "species"
+)
+
+# se comprueba que se ha modificado correctamente
+head(iris)
+```
+
+### Guarda el data frame con save en la carpeta results.
+
+```{r}
+save(iris, file = "data/results/iris")
+```
+
+## Inspección de los datos
+
+En este caso, contamos con un fichero de datos compuesto por 150 observaciones y 5 variables que los caracterizan.
+Todas ellas son numéricas a excepción de `species`, que son conjuntos de caracteres. 
+
+```{r}
+str(iris)
+```
+Los primeros registros pertenecen a la especie Iris-setosa, mientras que los últimos pertenecen a Iris-virginica. Además, se pueden ver diferencias en las características de ambas especies, concretamente en la longitud y anchura de los pétalos, que son  mayores en Iris-virginica.
+
+Cabe destacar que, al igual que en el dataset, las observaciones parecen estar agrupadas por especies. 
+
+```{r}
+head(iris)
+tail(iris)
+```
+
+La función `summary()` proporciona los principales estadísticos descriptivos de las cuatro variables numéricas.
+Observamos que la longitud media de los sépalos es de 5.843cm, mientras que su anchura media es de 3.054cm. Por otro lado, los pétalos presentan una longitud media de 3.759cm y una anchura media de 1.199cm.
+
+Cabe destacar que la longitud de los pétalos cuenta con valores bastante distintos, que van desde 1 hasta 6.9 cm.
+
+```{r}
+summary(iris)
+```
+# FileCodificado.json
+
+## Importar el fichero FileCodificado.json
+
+
+### Abrir el fichero FileCodificado.json con un editor de texto (el de RStudio vale) para ver qué contiene. Comprobaremos que se puede leer e interepretar con facilidad.
+
+### Importar el fichero a R con read_json. Observar la importancia del parámetro simplifyVector.
+
+Segun el valor booleando de `simplifyVector`:
+
+- **FALSE**: mantiene los arrays JSON como listas.
+- **TRUE**: convierte a vectores, matrices o data frames si el contenido del array lo permite.
+
+```{r}
+library(jsonlite)
+
+filename <- 'data/FileCodificado.json'
+
+file_codificado <- read_json(filename, simplifyVector = FALSE)
+
+# importar con simplificacion
+file_codificado_simp <- read_json(filename, simplifyVector = TRUE)
+
+# se comparan los dos tipos de
+str(file_codificado)
+str(file_codificado_simp)
+```
+
+La diferencia es clara con simplifyVector. Sin el, tenemos un objeto compuesto por una lista de 83 elementos, cada uno compuesto por otra lista de 22 atributos, mientras que con él, los datos se convierten automáticamente en un data frame de 83 observaciones y 22 variables. 
+
+De esta manera, es mucho más sencillo acceder a los datos.
+
+
+### Almacenar los resultados en FileCodificado.RData en la carpeta results.
+
+```{r}
+FileCodificado <- read_json(filename, simplifyVector = TRUE) 
+save(FileCodificado, file = "data/results/FileCodificado.RData")
+```
+
+## Inspección de los datos
+
+Mediante las funciones `dim()` y `str()` comprobamos que el conjunto de datos contiene 83 observaciones y 22 variables, de tipo numérico entero (int), numérico decimal (num) y carácter (chr). Estas recogen información sobre vehículos, conductores y características geográficas y económicas.
+
+```{r}
+dim(FileCodificado)
+```
+
+```{r}
+str(FileCodificado)
+```
+
+A simple vista, con `head()` y `tail()`, en ambos casos, las variables mostradas tienen valores idénticos, aunque esto no indica que estas características no pueden contar con diferencias en el conjunto completo.
+
+```{r}
+head(FileCodificado)
+tail(FileCodificado)
+```
+Con `summary()` se rectifica lo dicho anteriormente y se confirma que varias variables, como **Carburante**, **Potencia**, **Unidades_Matriculadas** y **Antigüedad**, tienen el mismo valor en todas las observaciones.
+
+```{r}
+summary(FileCodificado)
+```
+
+# iris_json.json
+
+## Importación 
+
+La diferencia es muy similar a la vista con simplifyVector.
+
+Con `read_json` se obtiene una estructura de listas que respeta el JSON, mientras que con `fromJSON` se obtiene un **dataframe**.
+
+```{r}
+library(jsonlite)
+
+filename <- "data/iris_json.json"
+
+iris_read <- read_json(filename)
+iris_from <- fromJSON(filename)
+
+class(iris_read)
+class(iris_from)
+```
