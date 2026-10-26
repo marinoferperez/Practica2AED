@@ -384,3 +384,143 @@ grafico4
 ```{r}
 ggsave("./data/results/Ejercicio4.pdf", plot = grafico4)
 ```
+
+# Ejercicio 5
+
+## Carga el fichero Experimento.Rdata. Examina las variables que tiene dicho dataset.
+
+```{r}
+fichero2 <- load("./data/Experimento.Rdata")
+fichero2
+```
+
+```{r}
+str(Experimento)
+```
+El conjunto de datos contiene **6 observaciones** y **4 variables**:
+
+- `Complemento`: variable categórica que identifica el tipo de complemento utilizado (`OJ` o `VC`).
+- `Dosis`: variable numérica que indica la cantidad de complemento.
+- `Altura`: variable numérica que recoge la altura registrada para cada complemento y dosis.
+- `Error_Altura`: variable numérica que representa el margen de error asociado a cada medida de altura.
+
+Por tanto, el dataset recoge los resultados de un experimento en el que se estudia **cómo varía la altura en función de la dosis y del tipo de complemento**, considerando también el posible error que pueda haber en las las mediciones.
+
+## Representa un gráfico de puntos, en el que se muestre la Dosis en el eje 𝑥 y la Altura en el eje 𝑦. Queremos que los datos de cada Complemento se representen en una línea diferente con diferentes trazos. Hazlo incluyendo las opciones de tipo de línea y forma del punto dentro del aes() de la capa ggplot.
+
+Representamos la altura en función de la dosis para cada complemento, diferenciándolos mediante colores, tipos de línea y formas de puntos. Para ello, utilizamos las funciones `geom_point()` y `geom_line()`, definiendo los atributos estéticos dentro de `aes()`.
+
+```{r}
+grafico5 <- ggplot(data = Experimento, mapping = aes(x = Dosis, y = Altura, color = Complemento, linetype = Complemento, shape = Complemento))
+grafico5 + geom_point() + geom_line()
+```
+A partir del gráfico obtenido, observamos que la altura aumenta conforme se incrementa la dosis en ambos complementos. La principal diferencia es que `OJ` cuenta con valores superiores a `VC` para las dosis de 0.5 y 1, mientras que con una dosis de 2 ambos alcanzan prácticamente la misma altura.
+
+## Crea otro gráfico añadiendo al gráfico anterior barras de error en cada punto. El error viene dado por la variable Error_Altura.
+
+Añdimos `geom_errorbar()` para representar el margen de error registrado en `Error_Altura`. Ademñas, se utiliza  el parámetro `width = 0.05` ya que, por defecto, las barras eran demasiado grandes y dificultaban la interpretación. 
+
+```{r}
+grafico5_error <- grafico5 + geom_point() + geom_line() + geom_errorbar(aes(ymin = Altura - Error_Altura, ymax = Altura + Error_Altura), width = 0.05)
+grafico5_error
+```
+Observamos que los intervalos de error de ambos complementos se solapan en la mayoría de dosis, especialmente en la dosis de 2. Por tanto, aunque `OJ` presenta mayores alturas en las dosis inferiores, el solapamiento de las barras de error indica que estas diferencias deben interpretarse con cuidado, ya que los intervalos de ambos complementos comparten parte de sus valores.
+
+## Crea otro gráfico, como el anterior (idéntico), pero en este caso no puedes incluir el tipo de línea y el tipo de punto en aes() de la capa ggplot. Además queremos que la paleta de colores sea en tonos de rojos (scale_color_brewer).
+
+El gráfico obtenido es el mismo, aunque su estética no se define en el `aes()` general de `ggplot()`, sino en `geom_point()` y `geom_line()`.
+
+```{r}
+grafico5 <- ggplot(data = Experimento, mapping = aes(x = Dosis, y = Altura, color = Complemento)) + geom_point(aes(shape = Complemento)) + geom_line(aes(linetype = Complemento)) + geom_errorbar(aes(ymin = Altura - Error_Altura, ymax = Altura + Error_Altura), width = 0.05) + scale_color_brewer(palette = "Reds")
+grafico5
+```
+
+## Almacena en formato pdf el gráfico resultante en un fichero denominado Ejercicio5.pdf.
+
+```{r}
+ggsave("./data/results/Ejercicio5.pdf", plot = grafico5)
+```
+
+# Ejercicio 6
+
+## El fichero iceRiver.RData contiene información del caudal de dos ríos islandeses medidos a diarios durante 3 años. Puedes obtener información detallada de las variables usando > ?tseries::ice.river
+
+```{r}
+fichero3 <- load("./data/iceRiver.RData")
+fichero3
+```
+
+```{r}
+?tseries::ice.river
+str(ice.river.df)
+```
+El conjunto de datos contiene **1096 observaciones y 5 variables**:
+
+- `flow.vat` y `flow.jok`: caudales diarios de dos rios.
+- `prec`: precipitaciones registradas.
+- `temp`: temperatura registrada.
+- `time`: momento temporal al que corresponde cada observación.
+
+Por tanto, el dataset permite estudiar la evolución del caudal de ambos ríos durante años y su relación con las condiciones meteorológicas.
+
+## Representa el caudal de ambos ríos a lo largo del período considerado coloreando una serie (flow.vat) en color rojo y la otra en color azul.
+
+```{r}
+grafico6 <- ggplot(data = ice.river.df, aes(x = time)) + geom_line(aes(y = flow.vat, color = "flow.vat")) + geom_line(aes(y = flow.jok, color = "flow.jok")) +
+scale_color_manual(values = c("flow.vat" = "red", "flow.jok" = "blue"))
+grafico6
+```
+Observamos que el río `flow.jok` (azul) presenta un caudal mucho mayor al de `flow.vat` (rojo) durante todo el periodo analizado, que transcurre desde 1972 hasta 1975.
+
+Ambos ríos muestran grandes oscilaciones, con picos de caudal que se repeiten anualmente, concretamente entre mediados y finales de cada año, lo que parece estar relacionado con las condiciones metereolgocias de esas fecahs. Además, `flow.jok` cuenta con variaciones mucho más pronunciadas, mientras que `flow.vat` muestra valores más bajos y estables.
+
+## Utiliza la función labs para enriquecer el gráfico.
+
+```{r}
+grafico6 <- grafico6 +
+  labs(
+    title = "Evolución del caudal de dos ríos",
+    subtitle = "Caudal diario durante el periodo 1972-1974",
+    x = "Año",
+    y = "Caudal",
+    color = "Río"
+  )
+
+grafico6
+```
+
+## Almacena en formato pdf el gráfico resultante en un fichero denominado Ejercicio6.pdf.
+
+```{r}
+ggsave("./data/results/Ejercicio6.pdf", plot = grafico6)
+```
+
+
+# Ejercicio 7
+
+## Carga el fichero weatherAUS_distributions.RData.
+
+```{r}
+ggsave("./data/results/Ejercicio6.pdf", plot = grafico6)
+```
+
+## Crea un gráfico en el que estén los boxplots de la variable MinTemp para cada uno de los años presentes en la variable Year del dataset.
+
+```{r}
+ggsave("./data/results/Ejercicio6.pdf", plot = grafico6)
+```
+
+## Crea un gráfico en el que estén los gráficos de violín de la variable MaxTemp para cada uno de los años presentes en la variable Year del dataset. Añade en el mismo gráfico una capa de etiquetas de título (Distribución de temperaturas máximas por año), eje 𝑥 (Año) y eje 𝑦 (Temperatura (ºC)). Colorea el interior de los violines según la la variable Year.
+
+```{r}
+ggsave("./data/results/Ejercicio6.pdf", plot = grafico6)
+```
+
+## En el gráfico anterior elimina la leyenda y coloca los años en el eje 𝑥 a 45 grados de inclinación. Busca información sobre cómo hacer esto.
+
+```{r}
+ggsave("./data/results/Ejercicio6.pdf", plot = grafico6)
+```
+
+## Almacena en formato pdf el gráfico resultante en un fichero denominado Ejercicio7.pdf.
+
