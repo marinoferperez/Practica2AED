@@ -102,21 +102,21 @@ A simple vista, el conjunto de datos contiene 863 observaciones y 24 variables q
 
 No obstante, se pueden observar **valores faltantes** en algunas de ellas, así como variables numéricas almacenadas como carácteres en `Evaporation` y `Sunshine`.
 
-## Crea un objeto ggplot denominado grafico1 en el que esté definido el conjunto de datos ds alojado en el fichero weatherAUS.RData y un aesthetics en el que en el eje 𝑥 esté definida la variable MinTemp y en el eje 𝑦 esté definida la variable MaxTemp. 
+## Crea un objeto ggplot denominado grafico1 en el que esté definido el conjunto de datos ds alojado en el fichero weatherAUS.RData y un aesthetics en el que en el eje x esté definida la variable MinTemp y en el eje y esté definida la variable MaxTemp. 
 
-Utilizando la libreria `ggplot2`, en el diagrama de dispersión obtenido se observa una **relación fuertemente lineal** entre `MinTemp` y `MaxTemp` donde, a medida que aumenta la temperatura mínima, también tiende a aumentar la temperatura máxima. Además, también se observa una menor concentración de observaciones cuando las temperaturas mínimas son muy bajas o muy altas, siendo más frecuentes los valores intermedios.
-
-No obstante, la relación no es perfecta ya que hay dispersión en los puntos.
 
 ```{r} 
 library(ggplot2)
-grafico1 <- ggplot(data = ds,
-                   mapping = aes(x = MinTemp, y = MaxTemp))
+grafico1 <- ggplot(data = ds, mapping = aes(x = MinTemp, y = MaxTemp))
 
 grafico1
 ```
 
 ## Añade una capa que defina el objeto geométrico necesario para construir un gráfico de dispersión de las variables MinTemp y MaxTemp.
+
+Utilizando la libreria `ggplot2`, en el diagrama de dispersión obtenido se observa una **relación fuertemente lineal** entre `MinTemp` y `MaxTemp` donde, a medida que aumenta la temperatura mínima, también tiende a aumentar la temperatura máxima. Además, también se observa una menor concentración de observaciones cuando las temperaturas mínimas son muy bajas o muy altas, siendo más frecuentes los valores intermedios.
+
+No obstante, la relación no es perfecta ya que hay dispersión en los puntos.
 
 ```{r}
 grafico1 + geom_point()
@@ -127,7 +127,6 @@ grafico1 + geom_point()
 grafico2 <- ggplot(data = ds, mapping = aes(x = MinTemp, y = MaxTemp, color = RainTomorrow))
 grafico2 + geom_point()
 ```
-
 ## Añade a grafico2 una capa para incluir un título con ggtitle() y almacénalo en grafico3.
 
 ```{r} 
@@ -159,7 +158,8 @@ temp_pres <- ggplot(data = ds,
 temp_pres + geom_point()
 ```
 
-Indicar que las varaibles se corresponde a la temperatura y la presion a las 9 de la mañana. ademas, se uede ver una relacion totalmente inversa. cuando la temperatura aumenta la presion disminuye.
+Se puede observar ua relacion lineal totalemente inversa.
+
 
 ## Modifica el gráfico anterior para incluir información categórica proporcionada por la variable RainToday con la forma del punto.
 
@@ -174,8 +174,6 @@ temp_pres + geom_point(aes(shape = RainToday))
 
 En esta ocasión, utilizamos el atributo estético `color` para diferenciar los registros según la variable `RainToday`, asignando un color distinto a los días con lluvia y sin lluvia.
 
-
-
 ```{r}
 temp_pres + geom_point(aes(color = RainToday))
 ```
@@ -183,10 +181,6 @@ temp_pres + geom_point(aes(color = RainToday))
 Comparando ambas representaciones, consideramos que **el color permite identificar más fácilmente las categorías**, ya que facilita distinguir visualmente los distintos grupos de observaciones. Por su parte, la representación mediante formas también permite diferenciarlos, aunque puede resultar menos clara cuando existe una elevada concentración de puntos.
 
 En general, el color permite distinguir más fácilmente las categorías, especialmente cuando tenemos muchos puntos.
-
-Sin embargo, hay una diferencia importante:
-- Forma (shape): permite distinguir las categorías sin depender del color, aunque puede resultar menos clara cuando hay muchos puntos superpuestos.
-- Color (color): facilita identificar visualmente los grupos y comparar su distribución en el gráfico.
 
 ## Añade títulos explicativos al gráfico anterior (debe aparece un título, subtítulo, leyendas e información de las variables representadas en los ejes).
 
@@ -206,7 +200,6 @@ temp_pres_text <- temp_pres +
 temp_pres_text
 ```
 De esta manera, a partir de un gráfico que ya era claro, conseguimos una representación aún más completa y facil de entender, que permite interpretar las variables representadas de manera informal y sin nesidad de consultar el código utilizado.
-
 
 ## Almacena en formato pdf el gráfico resultante en un fichero denominado Ejercicio2.pdf.
 
@@ -231,7 +224,6 @@ A partir de la función `str()`, visualizamos rápidamente la estructura del dat
 ```{r}
 str(iris.tidy)
 ```
-
 El dataset está compuesto por 600 observaciones y 4 variables que caracterizan a cada registro.
 
 ## Crea un objeto ggplot denominado iris.grafico1 en el que esté definido el conjunto de datos iris.tidy alojado en el fichero iris.tidy.RData y un aesthetics en el que en el eje x esté definida la variable Species y en el eje y esté definida la variable Value.
@@ -336,7 +328,7 @@ El conjunto de datos contiene 200 observaciones y 3 variables:
 
 Estos datos permitirán analizar y comparar la evolución temporal de las ventas de ambos fabricantes.
 
-## Representa un gráfico de puntos, en el que se muestre la fecha en el eje 𝑥 y las ventas en el eje 𝑦. Queremos que los datos de cada fabricante sean de un color distinto. ¿Es este gráfico válido para evaluar la evolución de las ventas de cada fabricante?
+## Representa un gráfico de puntos, en el que se muestre la fecha en el eje x y las ventas en el eje y. Queremos que los datos de cada fabricante sean de un color distinto. ¿Es este gráfico válido para evaluar la evolución de las ventas de cada fabricante?
 
 ```{r}
 grafico4 <- ggplot(data = DatosEjer4, mapping = aes(x = Fecha, y = Ventas, color = Fabricante))
@@ -406,7 +398,7 @@ El conjunto de datos contiene **6 observaciones** y **4 variables**:
 
 Por tanto, el dataset recoge los resultados de un experimento en el que se estudia **cómo varía la altura en función de la dosis y del tipo de complemento**, considerando también el posible error que pueda haber en las las mediciones.
 
-## Representa un gráfico de puntos, en el que se muestre la Dosis en el eje 𝑥 y la Altura en el eje 𝑦. Queremos que los datos de cada Complemento se representen en una línea diferente con diferentes trazos. Hazlo incluyendo las opciones de tipo de línea y forma del punto dentro del aes() de la capa ggplot.
+## Representa un gráfico de puntos, en el que se muestre la Dosis en el eje x y la Altura en el eje y. Queremos que los datos de cada Complemento se representen en una línea diferente con diferentes trazos. Hazlo incluyendo las opciones de tipo de línea y forma del punto dentro del aes() de la capa ggplot.
 
 Representamos la altura en función de la dosis para cada complemento, diferenciándolos mediante colores, tipos de línea y formas de puntos. Para ello, utilizamos las funciones `geom_point()` y `geom_line()`, definiendo los atributos estéticos dentro de `aes()`.
 
@@ -501,26 +493,50 @@ ggsave("./data/results/Ejercicio6.pdf", plot = grafico6)
 ## Carga el fichero weatherAUS_distributions.RData.
 
 ```{r}
-ggsave("./data/results/Ejercicio6.pdf", plot = grafico6)
+fichero4 <- load("./data/weatherAUS_distributions.RData")
+fichero4
 ```
 
+```{r}
+str(ds)
+```
 ## Crea un gráfico en el que estén los boxplots de la variable MinTemp para cada uno de los años presentes en la variable Year del dataset.
 
-```{r}
-ggsave("./data/results/Ejercicio6.pdf", plot = grafico6)
-```
-
-## Crea un gráfico en el que estén los gráficos de violín de la variable MaxTemp para cada uno de los años presentes en la variable Year del dataset. Añade en el mismo gráfico una capa de etiquetas de título (Distribución de temperaturas máximas por año), eje 𝑥 (Año) y eje 𝑦 (Temperatura (ºC)). Colorea el interior de los violines según la la variable Year.
+Usamos la función `geom_boxplot()`.
 
 ```{r}
-ggsave("./data/results/Ejercicio6.pdf", plot = grafico6)
+grafico7 <- ggplot(data = ds, mapping = aes(x = factor(Year), y = MinTemp)) + geom_boxplot()
+grafico7
 ```
+Observamos que las temperaturas mínimas presentan distribuciones relativamente similares, con algunas diferencias en sus medianas y dispersión.
+Destaca 2016, que presenta la mediana más elevada y una menor dispersión. 
 
-## En el gráfico anterior elimina la leyenda y coloca los años en el eje 𝑥 a 45 grados de inclinación. Busca información sobre cómo hacer esto.
+Ademas, también hay presencia de valores atípcios, especialemnte en 2010, 2011 y 2013.
+
+## Crea un gráfico en el que estén los gráficos de violín de la variable MaxTemp para cada uno de los años presentes en la variable Year del dataset. Añade en el mismo gráfico una capa de etiquetas de título (Distribución de temperaturas máximas por año), eje x (Año) y eje y (Temperatura (ºC)). Colorea el interior de los violines según la la variable Year.
+
+Utilizamos la función `geom_violin()`.
 
 ```{r}
-ggsave("./data/results/Ejercicio6.pdf", plot = grafico6)
+grafico8 <- ggplot(data = ds, mapping = aes(x = factor(Year), y = MaxTemp, fill = factor(Year))) + geom_violin() +
+  labs(
+    title = "Distribución de temperaturas máximas por año",
+    x = "Año",
+    y = "Temperatura (ºC)",
+    fill = "Año"
+  )
+
+grafico8
 ```
+
+Observamos que las temperaturas máximas presentan distribuciones diferentes según el año. En general, hay una mayor concentración de valores entre los 15 y 30 grados.
+
+Destaca, una vez más, 2016, con temperaturas más elevadas y concentradas, mientras que otros años presentan distribuciones más amplias.
+
+## En el gráfico anterior elimina la leyenda y coloca los años en el eje x a 45 grados de inclinación. Busca información sobre cómo hacer esto.
 
 ## Almacena en formato pdf el gráfico resultante en un fichero denominado Ejercicio7.pdf.
 
+```{r}
+ggsave("./data/results/Ejercicio7.pdf", plot = grafico7)
+```
